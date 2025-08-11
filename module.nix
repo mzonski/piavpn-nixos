@@ -59,7 +59,7 @@ in
       "L+ ${pkg.piaOptDir}/plugins - - - - ${pkg + pkg.piaOptDir}/plugins"
       "L+ ${pkg.piaOptDir}/qml - - - - ${pkg + pkg.piaOptDir}/qml"
       "L+ ${pkg.piaOptDir}/share - - - - ${pkg + pkg.piaOptDir}/share"
-      "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash"
+      "L+ /bin/bash - - - - ${pkgs.bash}/bin/bash" # If you know how to solve it in a better way please contribute
     ];
 
     networking = {
