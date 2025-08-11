@@ -8,11 +8,11 @@
 let
   inherit (lib) mkOption mkIf types;
   inherit (import ./utils.nix) callPiaWithDeps;
-  cfg = config.services.pia;
+  cfg = config.services.piavpn;
   pkg = cfg.package;
 in
 {
-  options.services.pia = {
+  options.services.piavpn = {
     enable = mkOption {
       type = types.bool;
       default = false;
@@ -29,13 +29,11 @@ in
     assertions = [
       {
         assertion = config.networking.networkmanager.enable;
-        message = "services.pia requires networking.networkmanager to be enabled";
+        message = "services.piavpn requires networking.networkmanager to be enabled";
       }
     ];
 
-    environment.systemPackages = [
-      pkg
-    ];
+    environment.systemPackages = [ pkg ];
 
     systemd.services.piavpn = {
       description = "Private Internet Access VPN Daemon";
