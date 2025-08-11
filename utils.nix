@@ -20,6 +20,13 @@
         psmisc
         makeDesktopItem
         iptables
+        iproute2
+        gawk
+        mount
+        systemd
+        openresolv
+        util-linux
+        coreutils
         ;
       wrapQtAppsHook = pkgs.qt6.wrapQtAppsHook;
     };

@@ -17,6 +17,13 @@
   psmisc,
   makeDesktopItem,
   installOutDir ? "$out/opt/piavpn",
+  iproute2,
+  gawk,
+  mount,
+  systemd,
+  openresolv,
+  util-linux,
+  coreutils,
   ...
 }:
 stdenv.mkDerivation rec {
@@ -53,6 +60,7 @@ stdenv.mkDerivation rec {
     psmisc
     libatomic_ops
     xterm
+    iproute2
   ];
 
   desktopItems = [
@@ -94,7 +102,9 @@ stdenv.mkDerivation rec {
 
     mkdir -p ${installOutDir}
     cp -a ./piafiles/* ${installOutDir}
-    install -Dm644 ./installfiles/app-icon.png -t $out/share/icons/hicolor/128x128/apps/piavpn.png
+    cp -a ./installfiles/app-icon.png ${installOutDir}/lib
+    mkdir -p $out/share/icons/hicolor/128x128/apps
+    ln -s ${installOutDir}/lib $out/share/icons/hicolor/128x128/apps/piavpn.png
 
     for binary in pia-client pia-daemon pia-hnsd pia-openvpn pia-ss-local pia-support-tool pia-unbound pia-wireguard-go piactl support-tool-launcher; do
       makeWrapper ${installOutDir}/bin/$binary ${installOutDir}/bin/$binary-wrapped \
@@ -102,6 +112,13 @@ stdenv.mkDerivation rec {
           lib.makeBinPath [
             iptables
             psmisc
+            iproute2
+            gawk
+            mount
+            systemd
+            openresolv
+            util-linux
+            coreutils
           ]
         }" \
         --prefix LD_LIBRARY_PATH : "${
@@ -113,6 +130,10 @@ stdenv.mkDerivation rec {
           ]
         }"
     done
+
+
+    substituteInPlace ${installOutDir}/bin/openvpn-updown.sh \
+      --replace "/usr/bin/busctl" "${systemd}/bin/busctl"
 
     mkdir -p $out/bin
 

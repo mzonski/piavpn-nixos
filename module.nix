@@ -41,8 +41,10 @@ in
       after = [ "network.target" ];
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${pkg.piaOptDir}/bin/pia-daemon-wrapped";
+        ExecStart = "/opt/piavpn/bin/pia-daemon-wrapped";
         Restart = "on-failure";
+        User = "root";
+        Group = "root";
       };
     };
 
@@ -61,6 +63,7 @@ in
     ];
 
     networking = {
+
       wireguard.enable = true;
       networkmanager = {
         enable = true;
