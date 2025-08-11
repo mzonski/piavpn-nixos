@@ -19,6 +19,7 @@
         libxkbcommon
         psmisc
         makeDesktopItem
+        copyDesktopItems
         iptables
         iproute2
         gawk
@@ -29,5 +30,6 @@
         coreutils
         ;
       wrapQtAppsHook = pkgs.qt6.wrapQtAppsHook;
+      xkeyboardconfig = pkgs.xorg.xkeyboardconfig;
     };
 }

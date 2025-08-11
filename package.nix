@@ -16,6 +16,7 @@
   libxkbcommon,
   psmisc,
   makeDesktopItem,
+  copyDesktopItems,
   installOutDir ? "$out/opt/piavpn",
   iproute2,
   gawk,
@@ -24,6 +25,7 @@
   openresolv,
   util-linux,
   coreutils,
+  xkeyboardconfig,
   ...
 }:
 stdenv.mkDerivation rec {
@@ -39,6 +41,7 @@ stdenv.mkDerivation rec {
     autoPatchelfHook
     makeWrapper
     wrapQtAppsHook
+    copyDesktopItems
   ];
 
   buildInputs = [
@@ -68,7 +71,7 @@ stdenv.mkDerivation rec {
       name = pname;
       desktopName = "Private Internet Access (PIA)";
       comment = "Private Internet Access VPN client";
-      exec = "XDG_SESSION_TYPE=X11 ${passthru.piaOptDir}/bin/pia-client %u";
+      exec = "${passthru.piaOptDir}/bin/pia-client %u";
       icon = pname;
       terminal = false;
       categories = [ "Network" ];
@@ -102,9 +105,6 @@ stdenv.mkDerivation rec {
 
     mkdir -p ${installOutDir}
     cp -a ./piafiles/* ${installOutDir}
-    cp -a ./installfiles/app-icon.png ${installOutDir}/lib
-    mkdir -p $out/share/icons/hicolor/128x128/apps
-    ln -s ${installOutDir}/lib $out/share/icons/hicolor/128x128/apps/piavpn.png
 
     for binary in pia-client pia-daemon pia-hnsd pia-openvpn pia-ss-local pia-support-tool pia-unbound pia-wireguard-go piactl support-tool-launcher; do
       makeWrapper ${installOutDir}/bin/$binary ${installOutDir}/bin/$binary-wrapped \
@@ -128,12 +128,16 @@ stdenv.mkDerivation rec {
             libnl.out
             libnsl.out
           ]
-        }"
+        }" \
+      --set QT_QPA_PLATFORM xcb \
+      --set QT_XKB_CONFIG_ROOT "${xkeyboardconfig}/share/X11/xkb"
     done
 
+    mkdir -p $out/share/icons/hicolor/128x128/apps
+    cp ./installfiles/app-icon.png $out/share/icons/hicolor/128x128/apps/piavpn.png
 
     substituteInPlace ${installOutDir}/bin/openvpn-updown.sh \
-      --replace "/usr/bin/busctl" "${systemd}/bin/busctl"
+      --replace-fail "/usr/bin/busctl" "${systemd}/bin/busctl"
 
     mkdir -p $out/bin
 
